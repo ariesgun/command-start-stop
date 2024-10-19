@@ -12,8 +12,8 @@ plugins:
           reviewDelayTolerance: "3 Days"
           taskStaleTimeoutDuration: "30 Days"
           maxConcurrentTasks: # Default concurrent task limits per role.
-            member: 5
-            contributor: 3
+            member: 2
+            contributor: 2
           startRequiresWallet: true # default is true
           emptyWalletText: "Please set your wallet address with the /wallet command first and try again."
           rolesWithReviewAuthority: ["MEMBER", "OWNER"]
