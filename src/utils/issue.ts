@@ -15,7 +15,7 @@ export async function getAssignedIssues(context: Context, username: string): Pro
   try {
     return await context.octokit
       .paginate(context.octokit.search.issuesAndPullRequests, {
-        q: `org:${payload.repository.owner.login} assignee:${username} is:open is:issue`,
+        q: `org:ubiquity org:ubiquity-os-marketplace org:ubiquity-os assignee:${username} is:open is:issue`,
         per_page: 100,
         order: "desc",
         sort: "created",
@@ -173,7 +173,7 @@ export async function addAssignees(context: Context, issueNo: number, assignees:
 export async function getAllPullRequests(context: Context, state: "open" | "closed" | "all" = "open", username: string) {
   const { payload } = context;
   const query: RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["parameters"] = {
-    q: `org:${payload.repository.owner.login} author:${username} state:${state}`,
+    q: `org:ubiquity org:ubiquity-os-marketplace org:ubiquity-os author:${username} state:${state}`,
     per_page: 100,
     order: "desc",
     sort: "created",
