@@ -72,9 +72,14 @@ export async function start(
     } else {
       const issues = await getAssignedIssues(context, user);
       assignedIssues = issues.map((el) => {
+        let html_url = el.html_url;
+        const parsed_url = html_url.split('//');
+        if (parsed_url.length === 2) {
+          html_url = `https://www.${parsed_url[1]}`;
+        } 
         return {
           title: el.title,
-          html_url: el.html_url,
+          html_url: html_url,
         }
       })
     }
