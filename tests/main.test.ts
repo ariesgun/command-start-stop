@@ -221,9 +221,9 @@ describe("User start/stop", () => {
     const context = createContext(issue, sender) as unknown as Context;
 
     context.adapters = createAdapters(getSupabase(), context as unknown as Context);
-    await expect(userStartStop(context)).rejects.toMatchObject({
-      logMessage: { raw: "You have reached your max task limit. Please close out some tasks before assigning new ones." },
-    });
+    await expect(userStartStop(context)).rejects.toThrowError(
+      "You have reached your max task limit. Please close out some tasks before assigning new ones."
+    );
 
     expect(memberLimit).toEqual(6);
   });
