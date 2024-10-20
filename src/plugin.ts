@@ -6,17 +6,27 @@ import { createAdapters } from "./adapters";
 import { userPullRequest, userSelfAssign, userStartStop, userUnassigned } from "./handlers/user-start-stop";
 import { Context, Env, PluginInputs } from "./types";
 import { addCommentToIssue } from "./utils/issue";
+import { createAppAuth } from "@octokit/auth-app";
 
 export async function startStopTask(inputs: PluginInputs, env: Env) {
   const customOctokit = Octokit.plugin(paginateGraphQL);
   const octokit = new customOctokit({ auth: inputs.authToken });
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 
+  const jwtOctokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: {
+      appId: env.APP_ID,
+      privateKey: env.APP_PRIVATE_KEY,
+    },
+  });
+
   const context: Context = {
     eventName: inputs.eventName,
     payload: inputs.eventPayload,
     config: inputs.settings,
     octokit,
+    jwtOctokit,
     env,
     logger: new Logs("info"),
     adapters: {} as ReturnType<typeof createAdapters>,

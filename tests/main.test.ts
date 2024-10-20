@@ -633,11 +633,14 @@ export function createContext(
       rolesWithReviewAuthority: ["ADMIN", "OWNER", "MEMBER"],
     },
     octokit: new octokit.Octokit(),
+    jwtOctokit: new octokit.Octokit(),
     eventName: "issue_comment.created" as SupportedEventsU,
     env: {
       SUPABASE_KEY: "key",
       SUPABASE_URL: "url",
       BOT_USER_ID: appId as unknown as number,
+      APP_ID: "app_id",
+      APP_PRIVATE_KEY: "private_key",
     },
   };
 }

@@ -27,6 +27,7 @@
     "open-source"
   ],
   "dependencies": {
+    "@octokit/auth-app": "^7.1.1",
     "@octokit/graphql-schema": "15.25.0",
     "@octokit/plugin-paginate-graphql": "5.2.2",
     "@octokit/rest": "20.1.1",

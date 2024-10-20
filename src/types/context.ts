@@ -20,6 +20,7 @@ export interface Context<T extends SupportedEventsU = SupportedEventsU, TU exten
   eventName: T;
   payload: TU["payload"];
   octokit: InstanceType<typeof Octokit> & paginateGraphQLInterface;
+  jwtOctokit: InstanceType<typeof Octokit>;
   adapters: ReturnType<typeof createAdapters>;
   config: PluginSettings;
   env: Env;

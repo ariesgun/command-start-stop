@@ -6,6 +6,8 @@ const ERROR_MSG = "Invalid BOT_USER_ID";
 export const envSchema = T.Object({
   SUPABASE_URL: T.String(),
   SUPABASE_KEY: T.String(),
+  APP_ID: T.String(),
+  APP_PRIVATE_KEY: T.String(),
   BOT_USER_ID: T.Transform(T.Union([T.String(), T.Number()], { examples: 123456 }))
     .Decode((value) => {
       if (typeof value === "string" && !isNaN(Number(value))) {

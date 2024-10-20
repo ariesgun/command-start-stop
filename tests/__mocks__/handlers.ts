@@ -128,4 +128,11 @@ export const handlers = [
   }),
   // get comments for an issue
   http.get("https://api.github.com/repos/:owner/:repo/issues/:issue_number/comments", () => HttpResponse.json(db.comments.getAll())),
+  // list installations
+  http.get("https://api.github.com/app/installations", () => HttpResponse.json([
+      {
+        login: "test-repo",
+      },
+    ]
+  )),
 ];
