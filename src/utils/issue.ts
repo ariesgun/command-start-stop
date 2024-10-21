@@ -13,15 +13,15 @@ export function isParentIssue(body: string) {
 export async function getAssignedIssues(context: Context, username: string): Promise<GitHubIssueSearch["items"]> {
 
   let installations = await context.jwtOctokit.apps.listInstallations();
-  let org_installed = ""
+  let orgs_installed = ""
   installations.data.forEach((el) => {
-    org_installed += `org:${el.account?.login} `
+    orgs_installed += `org:${el.account?.login} `
   })
-  
+
   try {
     return await context.octokit
       .paginate(context.octokit.search.issuesAndPullRequests, {
-        q: `${org_installed} assignee:${username} is:open is:issue`,
+        q: `${orgs_installed} assignee:${username} is:open is:issue`,
         per_page: 100,
         order: "desc",
         sort: "created",
@@ -178,8 +178,15 @@ export async function addAssignees(context: Context, issueNo: number, assignees:
 
 export async function getAllPullRequests(context: Context, state: "open" | "closed" | "all" = "open", username: string) {
   const { payload } = context;
+
+  let installations = await context.jwtOctokit.apps.listInstallations();
+  let orgs_installed = ""
+  installations.data.forEach((el) => {
+    orgs_installed += `org:${el.account?.login} `
+  })
+
   const query: RestEndpointMethodTypes["search"]["issuesAndPullRequests"]["parameters"] = {
-    q: `org:ubiquity org:ubiquity-os-marketplace org:ubiquity-os author:${username} state:${state}`,
+    q: `${orgs_installed} author:${username} state:${state}`,
     per_page: 100,
     order: "desc",
     sort: "created",
