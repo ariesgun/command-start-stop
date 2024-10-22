@@ -34,13 +34,19 @@ export async function start(
   let commitHash: string | null = null;
 
   try {
+    console.log(context.payload.repository.owner.login);
+    console.log(context.payload.repository.name);
+    console.log(context.payload.repository.default_branch)
+
     const hashResponse = await context.octokit.rest.repos.getCommit({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       ref: context.payload.repository.default_branch,
     });
     commitHash = hashResponse.data.sha;
+    console.log(commitHash)
   } catch (e) {
+    logger.error("...", e)
     logger.error("Error while getting commit hash", { error: e as Error });
   }
 
@@ -72,14 +78,9 @@ export async function start(
     } else {
       const issues = await getAssignedIssues(context, user);
       assignedIssues = issues.map((el) => {
-        let html_url = el.html_url;
-        const parsed_url = html_url.split('//');
-        if (parsed_url.length === 2) {
-          html_url = `https://www.${parsed_url[1]}`;
-        } 
         return {
           title: el.title,
-          html_url: html_url,
+          html_url: el.html_url,
         }
       })
     }
@@ -93,8 +94,14 @@ export async function start(
   } else if (toAssign.length === 0) {
     error = "You have reached your max task limit. Please close out some tasks before assigning new ones.";
     let issues = ""
+    const urlPattern = /https:\/\/(github.com\/(\S+)\/(\S+)\/issues\/(\d+))/g;
     assignedIssues.forEach((el) => {
-      issues = issues.concat(`- [${el.title}](${el.html_url})\n`)
+      const matches = [...el.html_url.matchAll(urlPattern)][0]
+      if (matches) {
+        issues = issues.concat(`- ###### [${matches[2]}/${matches[3]} - ${el.title} #${matches[4]}](https://www.${matches[1]})\n`)
+      } else {
+        issues = issues.concat(`- ###### [${el.title}](${el.html_url})\n`)
+      }
     })
 
     await addCommentToIssue(context, `
@@ -102,7 +109,6 @@ export async function start(
 > [!WARNING]
 > ${error}
 
-Currently assigned tasks:
 ${issues}
 
     `)
