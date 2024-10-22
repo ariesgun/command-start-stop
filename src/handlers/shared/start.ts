@@ -34,19 +34,13 @@ export async function start(
   let commitHash: string | null = null;
 
   try {
-    console.log(context.payload.repository.owner.login);
-    console.log(context.payload.repository.name);
-    console.log(context.payload.repository.default_branch)
-
     const hashResponse = await context.octokit.rest.repos.getCommit({
       owner: context.payload.repository.owner.login,
       repo: context.payload.repository.name,
       ref: context.payload.repository.default_branch,
     });
     commitHash = hashResponse.data.sha;
-    console.log(commitHash)
   } catch (e) {
-    logger.error("...", e)
     logger.error("Error while getting commit hash", { error: e as Error });
   }
 
