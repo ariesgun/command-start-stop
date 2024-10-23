@@ -1,4 +1,4 @@
-import { Context, ISSUE_TYPE, Label } from "../../types";
+import { Context, GitHubIssueSearch, ISSUE_TYPE, Label } from "../../types";
 import { isUserCollaborator } from "../../utils/get-user-association";
 import { addAssignees, addCommentToIssue, getAssignedIssues, getAvailableOpenedPullRequests, getTimeValue, isParentIssue } from "../../utils/issue";
 import { HttpStatusCode, Result } from "../result-types";
@@ -64,24 +64,17 @@ export async function start(
   teammates.push(sender.login);
 
   const toAssign = [];
-  let assignedIssues : any[]= [];
+  let assignedIssues : GitHubIssueSearch["items"] = [];
   // check max assigned issues
   for (const user of teammates) {
     if (await handleTaskLimitChecks(user, context, logger, sender.login)) {
       toAssign.push(user);
     } else {
-      const issues = await getAssignedIssues(context, user);
-      assignedIssues = issues.map((el) => {
-        return {
-          title: el.title,
-          html_url: el.html_url,
-        }
-      })
+      assignedIssues = assignedIssues.concat(await getAssignedIssues(context, user));
     }
   }
 
   let error: string | null = null;
-
   if (toAssign.length === 0 && teammates.length > 1) {
     error = "All teammates have reached their max task limit. Please close out some tasks before assigning new ones.";
     throw logger.error(error, { issueNumber: issue.number });
@@ -105,7 +98,7 @@ export async function start(
 
 ${issues}
 
-    `)
+`)
     throw new Error(logger.error(error, { issueNumber: issue.number }).logMessage.raw)
   }
 
